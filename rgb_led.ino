@@ -3,20 +3,20 @@
 #include <WiFiUdp.h>
 #include <FastLED.h>
 
-const char* ssid = "WIFIAP";
-const char* password = "WIFIPASS";
+const char* ssid = "WIFI_AP";
+const char* password = "WIFI_Pass";
 
-#define NUM_LEDS 16        // Number of leds
-#define DATA_PIN 12        // Data pin
+#define NUM_LEDS 16        // Jumlah LED WS2812 yang digunakan
+#define DATA_PIN 12        // Pin data yang terhubung ke LED
 
-CRGB leds[NUM_LEDS];      // Led init
+CRGB leds[NUM_LEDS];      // Inisialisasi objek LED
 
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 25200); // Get Jakarta Time
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 25200); // Waktu GMT +7 (Waktu Jakarta)
 
 
 void setup() {
-  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);  // config led 
+  FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS);  // Konfigurasi tipe LED dan pin data
   Serial.begin(115200);
 
    // Menghubungkan ke jaringan WiFi
@@ -27,17 +27,16 @@ void setup() {
   }
   
   Serial.println("Wifi Connected");
-  
-  // NTP init
+  // Menginisialisasi dan memulai waktu NTP
   timeClient.begin();
-  timeClient.setTimeOffset(25200); // NTP GMT +7 (Jakarta Time)
+  timeClient.setTimeOffset(25200); // Waktu GMT +7 (Waktu Jakarta)
 
   
 }
 
 void loop() {
 
-  // get time from NTP
+  // Memperbarui waktu dari server NTP
   timeClient.update();
 
   delay(1000);
@@ -49,7 +48,7 @@ void loop() {
   Serial.println("lampu hidup");
 
 if (currentHour >= 21 || currentHour < 5) {
-    // Turn off led between 9pm to 5am
+    // Matikan LED jika waktu berada di luar jangkauan waktu yang ditentukan
     FastLED.clear();
     FastLED.show();
   } else {
@@ -83,12 +82,12 @@ void fadeToColor(uint8_t targetR, uint8_t targetG, uint8_t targetB) {
   static uint8_t currentB = 0;
   
   // Calculate step size for each color component
-  int stepR = (targetR - currentR) / 30; // 30 seconds (30 * 2 steps)
-  int stepG = (targetG - currentG) / 30;
-  int stepB = (targetB - currentB) / 30;
+  int stepR = (targetR - currentR) / 10; // 30 seconds (30 * 2 steps)
+  int stepG = (targetG - currentG) / 10;
+  int stepB = (targetB - currentB) / 10;
   
   // Fade to the target color over 30 seconds
-  for (int i = 0; i < 30; i++) { // 30 seconds (30 * 2 steps)
+  for (int i = 0; i < 10; i++) { // 30 seconds (30 * 2 steps)
     currentR += stepR;
     currentG += stepG;
     currentB += stepB;
